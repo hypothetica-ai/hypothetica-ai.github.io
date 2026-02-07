@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>hypothetica.ai</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500&display=swap');
+
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --fg: #1a1a1a;
+            --bg: #fafafa;
+            --border: #1a1a1a;
+            --muted: #666;
+            --accent: #1a1a1a;
+            --line-num: #bbb;
+            --cursor-color: #1a1a1a;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            font-family: 'JetBrains Mono', 'Courier New', monospace;
+            background: var(--bg);
+            color: var(--fg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 2rem;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .editor {
+            width: 100%;
+            max-width: 620px;
+            border: 1px solid var(--border);
+        }
+
+        /* Title bar */
+        .titlebar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--border);
+            font-size: 12px;
+            letter-spacing: 0.02em;
+            color: var(--muted);
+        }
+
+        .titlebar-dots {
+            display: flex;
+            gap: 6px;
+        }
+
+        .titlebar-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            border: 1px solid var(--border);
+        }
+
+        /* Code area */
+        .code-body {
+            padding: 24px 0;
+        }
+
+        .line {
+            display: flex;
+            align-items: baseline;
+            padding: 0 16px;
+            line-height: 2;
+            font-size: 14px;
+        }
+
+        .line-num {
+            width: 32px;
+            flex-shrink: 0;
+            color: var(--line-num);
+            text-align: right;
+            padding-right: 16px;
+            user-select: none;
+            font-size: 12px;
+        }
+
+        .line-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .comment {
+            color: var(--muted);
+        }
+
+        /* Form line */
+        .input-line {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            flex: 1;
+        }
+
+        .input-line .prompt {
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .email-input {
+            font-family: 'JetBrains Mono', 'Courier New', monospace;
+            font-size: 14px;
+            color: var(--fg);
+            background: transparent;
+            border: none;
+            outline: none;
+            width: 100%;
+            padding: 0;
+            caret-color: var(--cursor-color);
+            line-height: 2;
+        }
+
+        .email-input::placeholder {
+            color: var(--line-num);
+        }
+
+        /* Submit button styled as a code line */
+        .submit-btn {
+            font-family: 'JetBrains Mono', 'Courier New', monospace;
+            font-size: 14px;
+            color: var(--fg);
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            line-height: 2;
+            text-decoration: underline;
+            text-underline-offset: 3px;
+        }
+
+        .submit-btn:hover {
+            color: var(--muted);
+        }
+
+        /* Status bar */
+        .statusbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 16px;
+            border-top: 1px solid var(--border);
+            font-size: 11px;
+            color: var(--line-num);
+            letter-spacing: 0.02em;
+        }
+
+        /* Feedback messages */
+        .feedback {
+            display: none;
+            color: var(--muted);
+            font-style: italic;
+        }
+
+        .feedback.show {
+            display: inline;
+        }
+
+        .feedback.error {
+            color: #c00;
+        }
+
+        /* Blinking cursor animation on the input */
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        .email-input:focus {
+            outline: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            body {
+                padding: 1rem;
+            }
+
+            .line {
+                font-size: 12px;
+                padding: 0 12px;
+            }
+
+            .line-num {
+                width: 24px;
+                padding-right: 12px;
+                font-size: 10px;
+            }
+
+            .email-input {
+                font-size: 12px;
+            }
+
+            .titlebar {
+                font-size: 11px;
+                padding: 8px 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="editor">
+    <div class="titlebar">
+        <div class="titlebar-dots">
+            <div class="titlebar-dot"></div>
+            <div class="titlebar-dot"></div>
+            <div class="titlebar-dot"></div>
+        </div>
+        <span>hypothetica.ai</span>
+    </div>
+
+    <div class="code-body">
+        <div class="line">
+            <span class="line-num">1</span>
+            <span class="line-content comment">// Welcome to hypothetica.ai</span>
+        </div>
+        <div class="line">
+            <span class="line-num">2</span>
+            <span class="line-content comment">// Enter your email for more information.</span>
+        </div>
+        <div class="line">
+            <span class="line-num">3</span>
+            <span class="line-content">&nbsp;</span>
+        </div>
+        <form id="emailForm" onsubmit="return handleSubmit(event)">
+            <div class="line">
+                <span class="line-num">4</span>
+                <div class="line-content input-line">
+                    <span class="prompt">email:&nbsp;</span>
+                    <input
+                        type="email"
+                        class="email-input"
+                        id="emailInput"
+                        placeholder="you@example.com"
+                        required
+                        autocomplete="email"
+                        autofocus
+                    >
+                </div>
+            </div>
+            <div class="line">
+                <span class="line-num">5</span>
+                <span class="line-content">
+                    <button type="submit" class="submit-btn">submit()</button>
+                    <span class="feedback" id="feedback"></span>
+                </span>
+            </div>
+        </form>
+        <div class="line">
+            <span class="line-num">6</span>
+            <span class="line-content">&nbsp;</span>
+        </div>
+    </div>
+
+    <div class="statusbar">
+        <span>UTF-8</span>
+        <span>Ln 4, Col 1</span>
+    </div>
+</div>
+
+<script>
+    // ─── CONFIGURATION ───────────────────────────────────────────────
+    // Replace this URL with your Google Form's actual submission URL.
+    // 
+    // How to get this:
+    // 1. Create a Google Form with one "Short answer" field for email
+    // 2. Get the pre-filled link (three-dot menu → Get pre-filled link)
+    // 3. Fill in a test value, click "Get link"
+    // 4. From that URL, extract:
+    //    - FORM_ACTION_URL: everything before the "?"  
+    //      (change /viewform to /formResponse)
+    //    - ENTRY_FIELD_ID: the "entry.XXXXXXXXX" parameter name
+    //
+    // Example:
+    //   FORM_ACTION_URL = "https://docs.google.com/forms/d/e/XXXXXX/formResponse"
+    //   ENTRY_FIELD_ID  = "entry.123456789"
+    // ──────────────────────────────────────────────────────────────────
+
+    const FORM_ACTION_URL = "https://docs.google.com/forms/d/e/1FAIpQLSfvu1O0U7WSzUF4npJqUoHB99cpkieeb-H52vsg1bXzioY-fQ/formResponse";
+    const ENTRY_FIELD_ID  = "entry.869703118";
+
+    function handleSubmit(e) {
+        e.preventDefault();
+
+        const email = document.getElementById('emailInput').value.trim();
+        const feedback = document.getElementById('feedback');
+
+        if (!email) return false;
+
+        // Basic email validation
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            feedback.textContent = ' // error: invalid email';
+            feedback.className = 'feedback show error';
+            return false;
+        }
+
+        // Submit to Google Forms via fetch (no-cors)
+        const formData = new URLSearchParams();
+        formData.append(ENTRY_FIELD_ID, email);
+
+        fetch(FORM_ACTION_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: formData.toString(),
+        }).then(() => {
+            // With no-cors we can't read the response, but the submit goes through
+            feedback.textContent = ' // ✓ received';
+            feedback.className = 'feedback show';
+            document.getElementById('emailInput').value = '';
+            document.getElementById('emailInput').placeholder = 'thank you';
+            document.getElementById('emailInput').disabled = true;
+        }).catch(() => {
+            feedback.textContent = ' // error: try again';
+            feedback.className = 'feedback show error';
+        });
+
+        return false;
+    }
+
+    // Update status bar column position as user types
+    const emailInput = document.getElementById('emailInput');
+    const statusbar = document.querySelector('.statusbar span:last-child');
+
+    emailInput.addEventListener('input', () => {
+        const col = emailInput.value.length + 8; // offset for "email: "
+        statusbar.textContent = `Ln 4, Col ${col}`;
+    });
+
+    emailInput.addEventListener('focus', () => {
+        const col = emailInput.value.length + 8;
+        statusbar.textContent = `Ln 4, Col ${col}`;
+    });
+</script>
+
+</body>
+</html>
