@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hypothetica</title>
+<meta name="description" content="Hypothetica is designing standards-based decentralization of experimental science — a body for the mind of the AI-scientist.">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+:root {
+  --ink: #12161F;
+  --ink-soft: #FFFFFF;
+  --paper: #FFFFFF;
+  --paper-dim: #EEF1F5;
+  --node: #FFFFFF;
+  --signal: #1E52E0;
+  --trace: #5C6B84;
+  --trace-dim: #AEB8C8;
+  --live: #009B87;
+  --hair: rgba(18,22,31,0.12);
+}
+
+html { scroll-behavior: smooth; }
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: 'Inter', system-ui, sans-serif;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+.wrap { max-width: 1080px; margin: 0 auto; padding: 0 32px; }
+
+/* ─── top bar ─── */
+.topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 26px 0;
+  border-bottom: 1px solid var(--hair);
+}
+.brand {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 600; font-size: 19px; letter-spacing: -0.01em;
+  color: var(--ink);
+}
+.brand .k { color: var(--signal); }
+.topbar .meta {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--trace);
+}
+
+/* ─── hero ─── */
+.hero { padding: 72px 0 40px; }
+.eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--live);
+  margin-bottom: 26px;
+}
+h1 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 600;
+  font-size: clamp(30px, 5.2vw, 52px);
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  max-width: 15ch;
+  margin-bottom: 34px;
+}
+.hero-lede {
+  font-size: clamp(16px, 2.1vw, 19px);
+  color: #2A3547;
+  max-width: 60ch;
+}
+.hero-lede em {
+  font-style: normal;
+  color: var(--ink);
+  border-bottom: 1px solid var(--signal);
+  padding-bottom: 1px;
+}
+
+/* ─── disaggregation graphic ─── */
+/* ─── resolving graph: abstract cycle → performer network ─── */
+.diagram {
+  margin: 12px 0 24px;
+  width: 100%;
+}
+.diagram svg { width: 100%; height: auto; display: block; overflow: visible; }
+
+@media (max-width: 720px) {
+  .diagram {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 12px -20px 24px;
+    padding: 0 20px;
+  }
+  .diagram svg { width: 760px; }
+}
+
+/* abstract top-layer nodes */
+.abs-node { opacity: 0; animation: nodeIn 0.6s cubic-bezier(.2,.7,.3,1) forwards; }
+.abs-box {
+  fill: #FFFFFF;
+  stroke: var(--ink);
+  stroke-width: 1.5;
+}
+.abs-label {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 12.5px; font-weight: 500;
+  fill: var(--ink);
+  letter-spacing: -0.01em;
+}
+/* abstract cycle edges */
+.abs-edge {
+  fill: none; stroke: var(--ink); stroke-width: 1.5;
+  opacity: 0; animation: linkIn 0.5s ease forwards;
+}
+.abs-edge-head { fill: var(--ink); opacity: 0; animation: linkIn 0.5s ease forwards; }
+
+/* resolution edges (abstract → performers) */
+.res-edge {
+  fill: none; stroke: var(--signal); stroke-width: 1;
+  opacity: 0; animation: resIn 0.7s ease forwards;
+}
+
+/* performer network nodes */
+.perf-node { opacity: 0; animation: nodeIn 0.6s cubic-bezier(.2,.7,.3,1) forwards; }
+.perf-dot { fill: var(--signal); }
+.perf-dot.live { fill: var(--live); }
+.perf-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px; fill: var(--trace);
+  letter-spacing: 0.01em;
+}
+/* mesh edges between performers */
+.mesh-edge {
+  stroke: var(--trace-dim); stroke-width: 0.75;
+  opacity: 0; animation: linkIn 0.6s ease forwards;
+}
+
+/* network boundary */
+.net-boundary {
+  fill: rgba(30,82,224,0.03);
+  stroke: var(--signal); stroke-width: 1;
+  stroke-dasharray: 3 4;
+  opacity: 0; animation: linkIn 0.8s ease forwards;
+}
+.net-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px; fill: var(--signal);
+  letter-spacing: 0.14em; text-transform: uppercase;
+  opacity: 0; animation: linkIn 0.8s ease forwards;
+}
+.layer-cap {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px; fill: var(--trace);
+  letter-spacing: 0.10em; text-transform: uppercase;
+}
+
+/* AI-autonomy band */
+.band-zone { fill: rgba(92,107,132,0.09); opacity: 0; animation: linkIn 0.6s ease forwards; }
+.band-zone.gap { fill: rgba(30,82,224,0.08); stroke: var(--signal); stroke-width: 1; stroke-dasharray: 3 3; }
+.band-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px; fill: var(--trace);
+  letter-spacing: 0.08em; text-transform: uppercase;
+  opacity: 0; animation: linkIn 0.6s ease forwards;
+}
+.band-label.gap { fill: var(--signal); font-weight: 500; }
+
+/* DMTA span brackets */
+.dmta-span { opacity: 0; animation: linkIn 0.5s ease forwards; }
+.dmta-bracket {
+  fill: none; stroke: var(--signal); stroke-width: 1;
+}
+.dmta-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; fill: var(--signal);
+  letter-spacing: 0.04em;
+}
+.dmta-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; fill: var(--trace);
+  letter-spacing: 0.08em;
+  opacity: 0; animation: linkIn 0.5s ease forwards;
+}
+
+@keyframes nodeIn {
+  from { opacity: 0; transform: translateY(6px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes linkIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes resIn { from { opacity: 0; } to { opacity: 0.55; } }
+
+/* section scaffolding */
+.section { padding: 64px 0; border-top: 1px solid var(--hair); }
+.sec-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--trace);
+  margin-bottom: 24px;
+}
+.body-copy {
+  font-size: clamp(16px, 2vw, 18px);
+  color: #2A3547;
+  max-width: 64ch;
+}
+.body-copy strong { color: var(--ink); font-weight: 600; }
+
+/* ─── who / track record ─── */
+.who-copy { max-width: 64ch; font-size: 17px; color: #2A3547; margin-bottom: 44px; }
+.who-copy strong { color: var(--ink); font-weight: 600; }
+.name-link { color: inherit; text-decoration: none; border-bottom: 1.5px solid var(--signal); padding-bottom: 1px; transition: color 0.15s; }
+.name-link:hover { color: var(--signal); }
+
+.record {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  border-top: 1px solid var(--hair);
+}
+.record-item {
+  padding: 22px 20px 22px 0;
+  border-right: 1px solid var(--hair);
+  position: relative;
+}
+.record-item:last-child { border-right: none; }
+.record-item::before {
+  content: '';
+  position: absolute; top: -1px; left: 0;
+  width: 8px; height: 8px;
+  background: var(--signal);
+  transform: translateY(-50%);
+  border-radius: 50%;
+}
+.record-item.jimb::before { background: var(--live); }
+.record-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 500; font-size: 15px;
+  color: var(--ink);
+  margin-bottom: 6px;
+  padding-top: 14px;
+}
+.record-desc {
+  font-size: 12.5px; color: var(--trace); line-height: 1.45;
+}
+
+/* ─── contact ─── */
+.contact { padding: 60px 0 90px; border-top: 1px solid var(--hair); }
+.contact-row {
+  display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap;
+  font-family: 'JetBrains Mono', monospace; font-size: 15px;
+}
+.contact-row .lbl {
+  font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--trace);
+}
+.reveal-link {
+  font-family: 'JetBrains Mono', monospace; font-size: 15px;
+  color: var(--ink); cursor: pointer;
+  text-decoration: underline; text-underline-offset: 3px;
+  background: none; border: none;
+}
+.reveal-link:hover { color: var(--signal); }
+.reveal-link.revealed { display: none; }
+.email-out a { color: var(--signal); text-decoration: underline; text-underline-offset: 3px; }
+.email-out a:hover { color: var(--live); }
+
+footer {
+  border-top: 1px solid var(--hair);
+  padding: 26px 0;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; letter-spacing: 0.06em;
+  color: var(--trace-dim);
+  display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px;
+}
+
+@media (max-width: 720px) {
+  .wrap { padding: 0 20px; }
+  .hero { padding: 48px 0 28px; }
+  .topbar .meta { display: none; }
+  .record { grid-template-columns: 1fr 1fr; }
+  .record-item:nth-child(2) { border-right: none; }
+  .record-item { border-bottom: 1px solid var(--hair); }
+}
+@media (max-width: 440px) {
+  .record { grid-template-columns: 1fr; }
+  .record-item { border-right: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .node-g, .link-path { animation: none !important; opacity: 1 !important; }
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <div class="topbar">
+    <div class="brand">Hypothetica<span class="k">.</span></div>
+    <div class="meta">Experimental science, disaggregated, programmable</div>
+  </div>
+
+  <!-- ── HERO ── -->
+  <section class="hero">
+    <div class="eyebrow">A body for the mind of the AI-scientist</div>
+    <h1>Hypothetica is bringing experimental science within reach of AI.</h1>
+
+    <div class="diagram" id="diagram" aria-hidden="true">
+      <!-- svg injected -->
+    </div>
+
+    <p class="hero-lede">
+      Hypothetica is designing standards-based decentralization of experimental science.
+      AI is already formulating hypotheses, designing experiments, and analyzing data —
+      what's missing is execution in the physical world, a <em>body</em> for the <em>mind</em>
+      of the AI-scientist. We are developing scalable, general-purpose approaches
+      to disaggregate experimental workflows into programmable, interoperable elements.
+    </p>
+  </section>
+
+  <!-- ── WHY ── -->
+  <section class="section">
+    <div class="sec-label">Why it matters</div>
+    <p class="body-copy">
+      Networked, decentralized science demands <strong>interoperability</strong> — not just
+      reproducible end results, but composable processes: standard ways to describe experiments
+      and invoke their operations, so discrete elements assemble into integrated workflows.
+      This lands at a moment of exploding complexity in biological measurement — frontier
+      platforms producing spatially resolved, high-dimensional, dynamic readouts down to single
+      cells. New metrology is needed to make those results <strong>trustworthy and networkable</strong>.
+    </p>
+  </section>
+
+  <!-- ── WHO ── -->
+  <section class="section">
+    <div class="sec-label">Who</div>
+    <p class="who-copy">
+      Founded by <a href="https://scholar.google.com/citations?user=LLWBm7UAAAAJ" target="_blank" rel="noopener" class="name-link"><strong>Marc Salit</strong></a>, who brings 40+ years in metrology and
+      standards-development innovation — bringing the rigor of physical-science precision
+      measurement to biology at the dawn of the genomics era. Hypothetica builds on this
+      experience to create the network that brings experimental science within reach of AI.
+    </p>
+
+    <div class="record">
+      <div class="record-item">
+        <div class="record-tag">ERCC</div>
+        <div class="record-desc">Founded &amp; led the External RNA Controls Consortium</div>
+      </div>
+      <div class="record-item">
+        <div class="record-tag">GIAB</div>
+        <div class="record-desc">Founded &amp; led the Genome in a Bottle Consortium</div>
+      </div>
+      <div class="record-item">
+        <div class="record-tag">NIST</div>
+        <div class="record-desc">Built &amp; led the Genome-Scale Measurements Group</div>
+      </div>
+      <div class="record-item jimb">
+        <div class="record-tag">JIMB</div>
+        <div class="record-desc">Joint Initiative for Metrology in Biology, with Stanford</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CONTACT ── -->
+  <section class="contact">
+    <div class="sec-label">Contact</div>
+    <div class="contact-row">
+      <span class="lbl">Inquiries</span>
+      <a href="#" id="revealLink" class="reveal-link" onclick="return revealEmail(event)">click to reveal</a><span class="email-out" id="emailOut"></span>
+    </div>
+  </section>
+
+  <footer>
+    <span>Hypothetica, Inc.</span>
+    <span>Standards-based decentralization of experimental science</span>
+  </footer>
+
+</div>
+
+<script>
+  // ── Resolving graph: abstract scientific cycle → performer network ──
+  (function buildGraph() {
+    const host = document.getElementById('diagram');
+    if (!host) return;
+
+    const W = 1016, H = 452;
+
+    // ── Abstract top layer: the scientific method as a 7-node cycle ──
+    const absY = 82, absH = 34, absW = 128, gap = 30;
+    const absNodes = ['Observe','Hypothesize','Design','Build','Measure','Infer'];
+    const absX = [];
+    let x = 20;
+    absNodes.forEach(() => { absX.push(x); x += absW + gap; });
+    const nodeCenter = i => absX[i] + absW/2;
+
+    // ── DMTA spans: [label, firstNodeIdx, lastNodeIdx] ──
+    // Design phase = the thinking (Observe→Hypothesize→Design); Make = Build; Test = Measure; Analyze = Analyze
+    const spans = [
+      { label:'design',  from:0, to:2 },
+      { label:'make',    from:3, to:3 },
+      { label:'test',    from:4, to:4 },
+      { label:'analyze', from:5, to:5 },
+    ];
+
+    // ── Performer network: generic lab/service types ──
+    // keyed to the abstract node they resolve FROM (by index).
+    // Execution services resolve from Build(3); measurement services from Measure(4).
+    const performers = [
+      { label:'literature / data',     from:0, x:44,  y:290 },
+      { label:'modeling',              from:1, x:210, y:344 },
+      { label:'experiment design',     from:2, x:326, y:290 },
+      { label:'hypothesis-test design',from:2, x:300, y:398 },
+      { label:'mechanism design',      from:2, x:452, y:344 },
+      { label:'synthesis',             from:3, x:520, y:290 },
+      { label:'liquid-handling',       from:3, x:498, y:398 },
+      { label:'robotics',              from:3, x:628, y:344 },
+      { label:'sequencing',            from:4, x:680, y:290, live:true },
+      { label:'imaging',               from:4, x:664, y:398 },
+      { label:'mass-spec',             from:4, x:784, y:344, live:true },
+      { label:'QC / calibration',      from:4, x:770, y:398, live:true },
+      { label:'statistics',            from:5, x:892, y:290 },
+      { label:'hypothesis testing',    from:5, x:892, y:344 },
+    ];
+
+    // mesh links between performers (the directed-graph texture)
+    const mesh = [[0,1],[1,2],[2,3],[3,4],[4,5],[5,6],[5,7],[6,8],[7,9],[8,10],[9,11],[8,9],[10,11],[9,12],[11,12],[12,13],[4,8],[2,5]];
+
+    let svg = `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The scientific method as a six-stage cycle — observe, hypothesize, design, build, measure, infer — where build and measure form an execution gap that AI does not cover, resolved to execution in a network of laboratory performers inside the Hypothetica network">`;
+
+    // network boundary
+    svg += `<rect class="net-boundary" x="20" y="266" width="988" height="160" rx="10" style="animation-delay:2.0s"/>`;
+    svg += `<text class="net-tag" x="40" y="262" style="animation-delay:2.2s">Hypothetica network</text>`;
+
+    // layer captions
+    svg += `<text class="layer-cap" x="20" y="16">The scientific process</text>`;
+    svg += `<text class="layer-cap" x="996" y="16" text-anchor="end">resolved to execution in a network of performers</text>`;
+
+    // ── abstract cycle edges (forward arrows) ──
+    for (let i = 0; i < absNodes.length - 1; i++) {
+      const x1 = absX[i] + absW, x2 = absX[i+1], yy = absY + absH/2;
+      const d = 0.9 + i * 0.10;
+      svg += `<line class="abs-edge" x1="${x1}" y1="${yy}" x2="${x2-6}" y2="${yy}" style="animation-delay:${d}s"/>`;
+      svg += `<path class="abs-edge-head" d="M ${x2-6} ${yy-3} L ${x2} ${yy} L ${x2-6} ${yy+3} Z" style="animation-delay:${d}s"/>`;
+    }
+    // ── AI-autonomy band: which stages AI already performs vs. the execution gap ──
+    // front group = Observe..Design ; gap = Build..Measure ; back group = Analyze..Infer
+    const bandGroups = [
+      { from:0, to:2, kind:'ai',  label:'AI-autonomous today' },
+      { from:3, to:4, kind:'gap', label:'the execution gap — Hypothetica' },
+      { from:5, to:5, kind:'ai',  label:'AI-autonomous' },
+    ];
+    const zoneY = absY - 8, zoneH = absH + 16;   // tint sits just behind the nodes
+    bandGroups.forEach((g, i) => {
+      const xa = absX[g.from] - 8, xb = absX[g.to] + absW + 8;
+      const mid = (xa + xb) / 2;
+      const cls = g.kind === 'gap' ? 'band-zone gap' : 'band-zone';
+      const lblCls = g.kind === 'gap' ? 'band-label gap' : 'band-label';
+      const d = 0.05 + i * 0.05;
+      svg += `<rect class="${cls}" x="${xa}" y="${zoneY}" width="${xb - xa}" height="${zoneH}" rx="8" style="animation-delay:${d}s"/>`;
+      svg += `<text class="${lblCls}" x="${mid}" y="${absY - 18}" text-anchor="middle" style="animation-delay:${0.6 + i*0.1}s">${g.label}</text>`;
+    });
+
+    // ── return arc (Infer → Observe) as an outer wrap, clear of the band labels ──
+    const wrapY = 42, xRt = absX[absNodes.length-1] + absW + 6, xLt = absX[0] - 6;
+    svg += `<path class="abs-edge wrap" d="M ${xRt} ${absY} L ${xRt} ${wrapY} L ${xLt} ${wrapY} L ${xLt} ${absY}" style="animation-delay:1.6s"/>`;
+    svg += `<path class="abs-edge-head" d="M ${xLt-3} ${absY-6} L ${xLt} ${absY} L ${xLt+3} ${absY-6} Z" style="animation-delay:1.6s"/>`;
+
+    // ── abstract nodes ──
+    absNodes.forEach((label, i) => {
+      const d = 0.1 + i * 0.11;
+      svg += `<g class="abs-node" style="animation-delay:${d}s">
+        <rect class="abs-box" x="${absX[i]}" y="${absY}" width="${absW}" height="${absH}" rx="6"/>
+        <text class="abs-label" x="${absX[i] + absW/2}" y="${absY + absH/2 + 4}" text-anchor="middle">${label}</text>
+      </g>`;
+    });
+
+    // ── DMTA span brackets beneath the cycle ──
+    const brkY = absY + absH + 12;   // bracket rule y
+    const tick = 5;
+    spans.forEach((s, i) => {
+      const xa = absX[s.from] + 6, xb = absX[s.to] + absW - 6;
+      const mid = (xa + xb) / 2;
+      const d = 1.9 + i * 0.12;
+      svg += `<g class="dmta-span" style="animation-delay:${d}s">
+        <path class="dmta-bracket" d="M ${xa} ${brkY - tick} L ${xa} ${brkY} L ${xb} ${brkY} L ${xb} ${brkY - tick}"/>
+        <text class="dmta-label" x="${mid}" y="${brkY + 15}" text-anchor="middle">${s.label}</text>
+      </g>`;
+    });
+    // (DMTA acronym spelled out by the span labels below the cycle)
+
+    // ── resolution edges: abstract node → its performers ──
+    performers.forEach((p, i) => {
+      const ax = nodeCenter(p.from), ay = absY + absH + 26;  // start below the bracket row
+      const px = p.x, py = p.y - 12;
+      const midY = (ay + py) / 2;
+      const d = 2.4 + i * 0.05;
+      svg += `<path class="res-edge" d="M ${ax} ${ay} C ${ax} ${midY}, ${px} ${midY}, ${px} ${py}" style="animation-delay:${d}s"/>`;
+    });
+
+    // ── mesh edges between performers ──
+    mesh.forEach((m, i) => {
+      const a = performers[m[0]], b = performers[m[1]];
+      const d = 3.0 + i * 0.03;
+      svg += `<line class="mesh-edge" x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}" style="animation-delay:${d}s"/>`;
+    });
+
+    // ── performer nodes ──
+    performers.forEach((p, i) => {
+      const d = 2.7 + i * 0.05;
+      const liveCls = p.live ? ' live' : '';
+      svg += `<g class="perf-node" style="animation-delay:${d}s">
+        <circle class="perf-dot${liveCls}" cx="${p.x}" cy="${p.y}" r="3.5"/>
+        <text class="perf-label" x="${p.x + 8}" y="${p.y + 3.5}">${p.label}</text>
+      </g>`;
+    });
+
+    svg += `</svg>`;
+    host.innerHTML = svg;
+  })();
+
+  // ── Obfuscated click-to-reveal contact (same approach as etalons.bio) ──
+  const _p = ['info', String.fromCharCode(64), 'hypothetica', '.', 'ai'];
+  function revealEmail(e) {
+    e.preventDefault();
+    const addr = _p[0] + _p[1] + _p[2] + _p[3] + _p[4];
+    const out = document.getElementById('emailOut');
+    const link = document.getElementById('revealLink');
+    const a = document.createElement('a');
+    a.href = 'mailto:' + addr;
+    a.textContent = addr;
+    out.appendChild(a);
+    link.classList.add('revealed');
+    return false;
+  }
+</script>
+
+</body>
+</html>
